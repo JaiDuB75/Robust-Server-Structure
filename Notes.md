@@ -235,7 +235,7 @@ A combination of an HTTP request method and URL in the request tells the server 
 
 An HTTP request method is a method that indicates the desired action (such as deleting a resource) to be taken on a given resource.
 
-Examples: 
+Examples:
 
 - GET
 - POST
@@ -249,13 +249,13 @@ Essentially, a RESTful API asserts that URLs have names and paths that accuratel
 
 What does this look like? The following table outlines standard RESTful naming conventions for a user profile API:
 
-| Route Name | URL Path | HTTP Method | Description |
-|------------|----------|-------------|-------------|
-| Index (list) | /profiles | GET      | Return a list of Profiles | 
-| Create | /profiles | POST | Create a new profile, assign an id, and return at least the id |
-| Read | /profiles/:id | GET | Return the profile with the specified id, or return 404 if it doesn't exist |
-| Update | /profile/:id | PUT | Update an exosting profile with the data in the request. |
-| Delete | /profiles/:id | DELETE | Delete the profile with the specified id. Don't 404 if it doesn't exist. | 
+| Route Name   | URL Path      | HTTP Method | Description                                                                 |
+| ------------ | ------------- | ----------- | --------------------------------------------------------------------------- |
+| Index (list) | /profiles     | GET         | Return a list of Profiles                                                   |
+| Create       | /profiles     | POST        | Create a new profile, assign an id, and return at least the id              |
+| Read         | /profiles/:id | GET         | Return the profile with the specified id, or return 404 if it doesn't exist |
+| Update       | /profile/:id  | PUT         | Update an exosting profile with the data in the request.                    |
+| Delete       | /profiles/:id | DELETE      | Delete the profile with the specified id. Don't 404 if it doesn't exist.    |
 
 ### Temporary State
 
@@ -265,7 +265,7 @@ Any changes to the data will be lost when the application restarts. This is fine
 
 So far, every route handler that you have written has used app.use(), which matches only on the optional path parameter. But now that you know about HTTP methods, you will create API endpoints that also match on HTTP methods. An API endpoint is a location where a client can send a request to retrieve a resource that exists on the server. It includes both the URL path and the HTTP method for the given URL path.
 
-Final Example: 
+Final Example:
 
 ```js
 //@notes-data.js
@@ -279,7 +279,6 @@ module.exports = [
     text: "REST maps CRUDL operations to HTTP methods",
   },
 ];
-
 ```
 
 ```js
@@ -295,9 +294,9 @@ app.use(express.json());
 app.get("/notes/:noteId", (req, res) => {
   const noteId = Number(req.params.noteId);
   const foundNote = notes.find((note) => note.id === noteId);
-  if (foundNote){
-  res.json({ data: foundNote });
-  }else{
+  if (foundNote) {
+    res.json({ data: foundNote });
+  } else {
     res.status(400).send(`Note id not found: ${noteId}`);
   }
 });
@@ -312,18 +311,18 @@ let lastNoteId = notes.reduce((maxId, note) => Math.max(maxId, note.id), 0);
 
 app.post("/notes", (req, res, next) => {
   const result = req.body.data;
-  if(!result){
+  if (!result) {
     res.sendStatus(400);
   }
-  if(!result.text){
+  if (!result.text) {
     return res.sendStatus(400);
   } else {
     const newNote = {
-      id : ++lastNoteId,
-      text : result.text,
+      id: ++lastNoteId,
+      text: result.text,
     };
     notes.push(newNote);
-    res.status(201).json({data:newNote});
+    res.status(201).json({ data: newNote });
   }
 });
 
@@ -341,7 +340,6 @@ app.use((error, request, response, next) => {
 });
 
 module.exports = app;
-
 ```
 
 ## API Testing with SuperTest
@@ -362,7 +360,7 @@ npm install --save-dev jest supertest
 
 Test files should have the suffix .test.js. By default, Jest will be checking filenames for that suffix when looking for test files to execute.
 
-```js 
+```js
 //@ app.test.js
 
 /*
@@ -437,7 +435,7 @@ describe("path /pastes", () => {
           syntax: "None",
           expiration: 10,
           exposure: "private",
-          text: "Hello World!"
+          text: "Hello World!",
         },
         {
           id: 2,
@@ -446,7 +444,7 @@ describe("path /pastes", () => {
           syntax: "Python",
           expiration: 24,
           exposure: "public",
-          text: "print(Hello World!)"
+          text: "print(Hello World!)",
         },
         {
           id: 3,
@@ -455,8 +453,8 @@ describe("path /pastes", () => {
           syntax: "Javascript",
           expiration: 24,
           exposure: "public",
-          text: "const stringReverse = str => str.split('').reverse().join('');"
-        }
+          text: "const stringReverse = str => str.split('').reverse().join('');",
+        },
       ];
 
       pastes.push(...expected);
@@ -470,9 +468,9 @@ describe("path /pastes", () => {
 });
 ```
 
-#### Run Test in Watch Mode: 
+#### Run Test in Watch Mode:
 
-Add to package.json: 
+Add to package.json:
 
 ```json
 "scripts": {
@@ -483,7 +481,7 @@ Add to package.json:
   },
 ```
 
-Run: 
+Run:
 
 ```powershell
 npm run test:watch
@@ -522,7 +520,7 @@ describe("POST method", () => {
       syntax: "Javascript",
       expiration: 24,
       exposure: "public",
-      text: "const stringReverse = str => str.split('').reverse().join('');"
+      text: "const stringReverse = str => str.split('').reverse().join('');",
     };
     const response = await request(app)
       .post("/pastes")
@@ -558,7 +556,6 @@ describe("POST method", () => {
 
 ## Major Error Types and Handling
 
-
 You'll learn how to implement a centralized error-handling approach; this is especially important when you begin to build bigger and more complex APIs.
 
 ### Validation
@@ -572,7 +569,7 @@ function bodyHasTextProperty(req, res, next) {
   if (text) {
     return next(); // Call `next()` without an error message if the result exists
   }
-    next({
+  next({
     status: 400,
     message: "A 'text' property is required.",
   });
@@ -585,7 +582,8 @@ app.post(
   bodyHasTextProperty, // Add validation middleware function
   (req, res) => {
     // Route handler no longer has validation code.
-    const { data: { name, syntax, exposure, expiration, text, user_id } = {} } = req.body;
+    const { data: { name, syntax, exposure, expiration, text, user_id } = {} } =
+      req.body;
     const newPaste = {
       id: ++lastPasteId, // Increment last id then assign as the current ID
       name,
@@ -599,4 +597,354 @@ app.post(
     res.status(201).json({ data: newPaste });
   }
 );
+```
+
+## Major Error Types and Handling
+
+Another key feature of a robust API is its error-handling approach. When building RESTful APIs using Express, or any other framework or library, validation checks are always necessary as a best practice. And it's always important to return an error response to the client, so that the client can stay informed on why their request isn't working.
+
+### Validation
+
+To ensure that each route handler has a single responsibility, you can move all validation code into middleware functions. By doing all of the validation in the middleware layer, the route handler will never have to directly make any check related to the request. All these checks will be done in the middleware.
+
+```js
+app.use((error, req, res, next) => {
+  console.error(error);
+  res.send(error);
+});
+```
+
+This error handler will catch every error, but it doesn't respond with JSON data like the route handlers. That makes error handling more difficult for developers using the API.
+
+#### Return Validation Error
+
+```js
+// New middleware function to validate the request body
+function bodyHasTextProperty(req, res, next) {
+  const { data: { text } = {} } = req.body;
+  if (text) {
+    return next(); // Call `next()` without an error message if the result exists
+  }
+  next("A 'text' property is required.");
+}
+
+let lastPasteId = pastes.reduce((maxId, paste) => Math.max(maxId, paste.id), 0);
+
+app.post(
+  "/pastes",
+  bodyHasTextProperty, // Add validation middleware function
+  (req, res) => {
+    // Route handler no longer has validation code.
+    const { data: { name, syntax, exposure, expiration, text, user_id } = {} } =
+      req.body;
+    const newPaste = {
+      id: ++lastPasteId, // Increment last id then assign as the current ID
+      name,
+      syntax,
+      exposure,
+      expiration,
+      text,
+      user_id,
+    };
+    pastes.push(newPaste);
+    res.status(201).json({ data: newPaste });
+  }
+);
+```
+
+Now, if validation fails within the validation middleware (bodyHasTextProperty()), then next() is called with an error message. This will cause the error handler to be called. The value passed into next() will be passed to the error handler as the first argument. Here, you are only doing validation for the text property. In the next lesson, you will complete validation for all the properties.
+
+Here, because the request is malformed, it is appropriate to return a 400 status code.
+
+```js
+function bodyHasTextProperty(req, res, next) {
+  const { data: { text } = {} } = req.body;
+  if (text) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: "A 'text' property is required.",
+  });
+}
+```
+
+## Organizing Express Code
+
+### What's the Problem
+
+Defining all of the route handers as anonymous functions inside of app.js will get overwhelming, even for small applications. For example, your app.js file likely has more than 70 lines of code.
+
+### Group by Resource
+
+Group by Resource means that any code that handles requests to a resource (such as /pastes) is stored in a folder with the same name as the resource, regardless of the URL to that resource.
+
+Grouping by resource allows you to clarify your architecture; any file in the folder can import functions from any other file in the same folder, but may not import functions from files in other folders. There are, of course, exceptions for folders that are understood to only contain shared code (such as a utilities folder).
+
+### Controller
+
+A controller file defines and exports the route-handler functions. This file's single responsibility in an API is to manage the state of a single resource
+
+So far, your route-handler functions have been written as anonymous functions defined inline with calls to app.use(), app.get(), or app.post(). Now you will move these functions to named functions exported from the controller file.
+
+You will reorganize your code by making many small changes and making sure the code still works after each change, rather than making all of the changes at once and then checking to make sure that your API still works. 
+
+### Create a controller for the /pastes resource
+
+```js
+//@ src/pastes/pastes.controller.js
+
+const pastes = require("../data/pastes-data");
+
+function list(req, res) {
+  res.json({ data: pastes });
+}
+
+module.exports = {
+  list,
+};
+```
+
+Now that you have the list route handler defined in the controller, you can create a router to connect the GET /pastes endpoint to the router-handler function (which is list()).
+
+### Router
+
+The Express router is a modular middleware and routing system that can be attached to an Express app.
+
+You only need to specify the starting path, and the router will handle the rest for you.
+
+The router file defines and exports an instance of Express router. The router file is only responsible for connecting a path (/) with the route handler for that path (pastesController.list()).
+
+The modularity of the router means that it can be "attached" to the Express app using any starting point. As a result, the paths in the router are always defined independently of the starting point.
+
+A starting point is any part of the path defined when the router is attached to the app.The full URL to any handler in a router will be the starting point followed by the path defined in the router.
+
+Being able to "attach" the router to the app using any starting point, or move it to a different starting point without changing the router, is a key benefit of using the Express router.
+
+### Create a Router for the /pastes Resource
+
+```js
+//@ src/pastes/pastes.router.js
+const router = require("express").Router(); //creates a new instance of Express router.
+const controller = require("./pastes.controller"); //imports the /pastes controller that you created earlier.
+
+router.route("/").get(controller.list); 
+/*
+router.route("/") using route() allows you to write the path once, and then chain multiple route handlers to that path. Right now you have only get(), but later on, you will add post() and all() to the method chain.
+
+get(controller.list) uses the list() route handler defined in the controller for GET requests to /.
+*/ 
+
+module.exports = router; //module.exports = router; exports the router for use in app.js.
+```
+
+Now that you have a router defined, attach it to the app.
+
+```js
+//@app.js
+
+const pastesRouter = require("./pastes/pastes.router");
+
+app.get("/pastes", (req, res) => {
+  res.json({ data: pastes });
+});
+```
+
+### Reorganize the Create-pastes handler
+
+You will move the POST /pastes route handler and validation middleware out of app.js and put it into pastes.controller.js.
+
+Remove the following code: 
+
+```js
+//@app.js
+function bodyHasTextProperty(req, res, next) {
+  const { data: { text } = {} } = req.body;
+  if (text) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: "A 'text' property is required.",
+  });
+}
+
+let lastPasteId = pastes.reduce((maxId, paste) => Math.max(maxId, paste), 0)
+
+app.post("/pastes", bodyHasTextProperty, (req, res, next) => {
+  const { data: { name, syntax, exposure, expiration, text, user_id } = {} } = req.body;
+  const newPaste = {
+    id: ++lastPasteId, // Increment last ID, then assign as the current ID
+    name,
+    syntax,
+    exposure,
+    expiration,
+    text,
+    user_id,
+  };
+  pastes.push(newPaste);
+  res.status(201).json({ data: newPaste });
+});
+```
+
+Add the following
+
+```js
+//@ pastes.controller.js
+let lastPasteId = pastes.reduce((maxId, paste) => Math.max(maxId, paste.id), 0)
+
+function bodyHasTextProperty(req, res, next) {
+  const { data: { text } = {} } = req.body;
+  if (text) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: "A 'text' property is required.",
+  });
+}
+
+function create(req, res) {
+  const { data: { name, syntax, exposure, expiration, text, user_id } = {} } = req.body;
+  const newPaste = {
+    id: ++lastPasteId, // Increment last id then assign as the current ID
+    name,
+    syntax,
+    exposure,
+    expiration,
+    text,
+    user_id,
+  };
+  pastes.push(newPaste);
+  res.status(201).json({ data: newPaste });
+}
+
+module.exports = {
+  create: [bodyHasTextProperty, create],
+  list,
+};
+```
+
+Modify your router code in pastes.router.js: 
+
+```js
+//@ pastes.router.js
+router.route("/").get(controller.list).post(controller.create);
+```
+
+### Enhance creaete-paste validation
+
+Now that you know that the create-paste handler is working in the reorganized code, you will enhance the create-paste validation to make sure that the other properties are also in the request.
+
+Remove the following code: 
+
+```js
+//@ app.js
+
+function bodyHasTextProperty(req, res, next) {
+  const { data: { text } = {} } = req.body;
+  if (text) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: "A 'text' property is required.",
+  });
+}
+```
+
+Add the following:
+```js
+//@ pastes.controller.js
+function bodyDataHas(propertyName) {
+  return function (req, res, next) {
+    const { data = {} } = req.body;
+    if (data[propertyName]) {
+      return next();
+    }
+    next({ status: 400, message: `Must include a ${propertyName}` });
+  };
+}
+```
+
+As an alternative to writing a function for validating each property, the bodyDataHas() function allows you to validate any given parameter. Now, update module.exports to include the new validation middleware:
+
+```js
+//@ pastes.controller.js
+
+module.exports = {
+  create: [
+      bodyDataHas("name"),
+      bodyDataHas("syntax"),
+      bodyDataHas("exposure"),
+      bodyDataHas("expiration"),
+      bodyDataHas("text"),
+      bodyDataHas("user_id"),
+      create
+  ],
+  list,
+};
+```
+
+You can add additional validation to test that the properties have valid values. Add the following code to pastes.controller.js:
+
+```js
+// @ pastes.controller.js
+
+function exposurePropertyIsValid(req, res, next) {
+  const { data: { exposure } = {} } = req.body;
+  const validExposure = ["private", "public"];
+  if (validExposure.includes(exposure)) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: `Value of the 'exposure' property must be one of ${validExposure}. Received: ${exposure}`,
+  });
+}
+
+function syntaxPropertyIsValid(req, res, next) {
+  const { data: { syntax } = {} } = req.body;
+  const validSyntax = ["None", "Javascript", "Python", "Ruby", "Perl", "C", "Scheme"];
+  if (validSyntax.includes(syntax)) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: `Value of the 'syntax' property must be one of ${validSyntax}. Received: ${syntax}`,
+  });
+}
+
+function expirationIsValidNumber(req, res, next){
+  const { data: { expiration }  = {} } = req.body;
+  if (expiration <= 0 || !Number.isInteger(expiration)){
+      return next({
+          status: 400,
+          message: `Expiration requires a valid number`
+      });
+  }
+  next();
+}
+```
+
+Then change the export to include these new middleware functions: 
+
+```js
+//@ pastes.controller.js
+
+module.exports = {
+  create: [
+      bodyDataHas("name"),
+      bodyDataHas("syntax"),
+      bodyDataHas("exposure"),
+      bodyDataHas("expiration"),
+      bodyDataHas("text"),
+      bodyDataHas("user_id"),
+      exposurePropertyIsValid,
+      syntaxPropertyIsValid,
+      expirationIsValidNumber,
+      create
+  ],
+  list,
+};
 ```
